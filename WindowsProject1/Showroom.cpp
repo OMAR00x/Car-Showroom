@@ -12,6 +12,7 @@
 
 Showroom::Showroom() {
     floorTex = wallTex = glassTex = ceilingTex = roadTex = signTex = skyTex = skyCeilingTex = 0;
+    paintingTex[0] = paintingTex[1] = paintingTex[2] = paintingTex[3] = 0;
     carDisplayList = crystalDisplayList = 0;
     doorOpen = 0;
     doorOpening = false;
@@ -44,6 +45,12 @@ void Showroom::init() {
     ceilingTex = loadTexture("textures/ceiling.jpg");
     skyTex = loadTexture("textures/sky.jpg");
     signTex = loadTexture("textures/sign.png");
+    
+    paintingTex[0] = loadTexture("textures/painting1.jpg");
+    paintingTex[1] = loadTexture("textures/painting2.jpg");
+    paintingTex[2] = loadTexture("textures/painting3.jpg");
+    paintingTex[3] = loadTexture("textures/painting4.jpg");
+    
     createDisplayLists();
     
     // Load car models
@@ -775,6 +782,19 @@ void Showroom::drawFloor(int level) {
     drawCeilingLights(level);
     drawNeonLines(level);
     drawShowroomPlatforms(level);
+    
+    // Draw painting on right wall
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, paintingTex[level]);
+    glColor3f(1, 1, 1);
+    glBegin(GL_QUADS);
+    glNormal3f(-1, 0, 0);
+    glTexCoord2f(0, 1); glVertex3f(hw - 0.1f, y + 2, 10);
+    glTexCoord2f(1, 1); glVertex3f(hw - 0.1f, y + 2, 25);
+    glTexCoord2f(1, 0); glVertex3f(hw - 0.1f, y + 6, 25);
+    glTexCoord2f(0, 0); glVertex3f(hw - 0.1f, y + 6, 10);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
 }
 
 void Showroom::drawShowroomPlatforms(int level) {
@@ -998,10 +1018,10 @@ void Showroom::drawCar(float x, float y, float z, float angle, int type) {
     
     // Use models for some cars, keep simple cars for others
     if(type == 0 && shelbyModel) {
-        glTranslatef(0, -0.5f, 0);
+        glTranslatef(0, -1.5f, 0);
         shelbyModel->draw();
     } else if(type == 1 && mercModel) {
-        glTranslatef(0, -0.5f, 0);
+        glTranslatef(0, -0.2f, 0);
         mercModel->draw();
     } else {
         // Fallback to simple car
@@ -1486,24 +1506,22 @@ void Showroom::drawHUD() {
     glEnable(GL_LIGHTING);
     
     // Show "Press R to enter car" message when near a car
-    if(!inDriverSeat) {
-        if(mainCar && mainCar->isNear(cameraX, cameraZ)) {
-            glDisable(GL_DEPTH_TEST);
-            glDisable(GL_LIGHTING);
-            glEnable(GL_BLEND);
-            
-            glColor4f(0.2f, 0.8f, 0.2f, 0.8f);
-            glRasterPos2f(500, 360);
-            const char* msg = "Press R to enter car";
-            for(int i = 0; msg[i] != '\0'; i++) {
-                glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, msg[i]);
-            }
-            
-            glDisable(GL_BLEND);
-            glEnable(GL_DEPTH_TEST);
-            glEnable(GL_LIGHTING);
+    if(!inDriverSeat && currentFloor == 0 && mainCar && mainCar->isNear(cameraX, cameraZ)) {
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_LIGHTING);
+        glEnable(GL_BLEND);
+        
+        glColor4f(0.2f, 0.8f, 0.2f, 0.8f);
+        glRasterPos2f(500, 360);
+        const char* msg = "Press R to enter car";
+        for(int i = 0; msg[i] != '\0'; i++) {
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, msg[i]);
         }
-    } else {
+        
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_LIGHTING);
+    } else if(inDriverSeat) {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);
         glEnable(GL_BLEND);
@@ -1534,31 +1552,9 @@ void Showroom::updateCurrentFloor(float cameraY) {
 }
 
 bool Showroom::isNearCar(float camX, float camZ, float& carX, float& carY, float& carZ, float& carAngle) {
-    float y = currentFloor * floorHeight;
-    
-    struct CarPos { float x, z, angle; };
-    CarPos cars[] = {
-        {-15, 22, carRotation},
-        {20, 22, -carRotation},
-        {0, 40, carRotation * 0.5f}
-    };
-    
-    for(int i = 0; i < 3; i++) {
-        float dx = camX - cars[i].x;
-        float dz = camZ - cars[i].z;
-        float dist = sqrt(dx*dx + dz*dz);
-        
-        if(dist < 8.0f) {
-            carX = cars[i].x;
-            carY = y + 1.3f;
-            carZ = cars[i].z;
-            carAngle = cars[i].angle;
-            driverCarX = carX;
-            driverCarY = carY;
-            driverCarZ = carZ;
-            driverCarAngle = carAngle;
-            return true;
-        }
+    if(currentFloor == 0 && mainCar && mainCar->isNear(camX, camZ)) {
+        mainCar->getPosition(carX, carY, carZ, carAngle);
+        return true;
     }
     return false;
 }
@@ -1580,7 +1576,7 @@ void Showroom::toggleCarWheels() {
 }
 
 void Showroom::enterCar() {
-    if(mainCar && mainCar->isNear(cameraX, cameraZ)) {
+    if(currentFloor == 0 && mainCar && mainCar->isNear(cameraX, cameraZ)) {
         inDriverSeat = !inDriverSeat;
         mciSendStringA("close entercar", NULL, 0, NULL);
         mciSendStringA("open sounds\\open-car-door.wav type mpegvideo alias entercar", NULL, 0, NULL);
@@ -1593,7 +1589,7 @@ void Showroom::enterCar() {
 }
 
 void Showroom::toggleEngine() {
-    if(mainCar && inDriverSeat) {
+    if(inDriverSeat && mainCar) {
         mainCar->toggleEngine();
     }
 }

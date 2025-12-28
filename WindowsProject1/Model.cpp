@@ -48,9 +48,9 @@ bool Model::load(const std::string& filename) {
         glNewList(dlist, GL_COMPILE);
 
         const auto& mat = pimpl->materials[i];
-        GLfloat ambient[] = { mat.ambient[0], mat.ambient[1], mat.ambient[2], 1.0f };
-        GLfloat diffuse[] = { mat.diffuse[0], mat.diffuse[1], mat.diffuse[2], 1.0f };
-        GLfloat specular[] = { mat.specular[0], mat.specular[1], mat.specular[2], 1.0f };
+        GLfloat ambient[] = { 0.4f, 0.4f, 0.4f, 1.0f };
+        GLfloat diffuse[] = { mat.diffuse[0] * 3.0f, mat.diffuse[1] * 3.0f, mat.diffuse[2] * 3.0f, 1.0f };
+        GLfloat specular[] = { 0.8f, 0.8f, 0.8f, 1.0f };
 
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);

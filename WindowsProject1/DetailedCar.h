@@ -194,7 +194,7 @@ public:
         glPushMatrix();
         glTranslatef(x, y, z);
         glRotatef(angle, 0, 1, 0);
-        glScalef(1.2f, 1.2f, 1.2f);
+        glScalef(2.0f, 1.5f, 2.0f);
         
         drawBody();
         drawWheels();
@@ -216,15 +216,9 @@ public:
     }
     
     void toggleEngine() {
-        engineOn = !engineOn;
-        if(engineOn) {
-            mciSendStringA("close carengine", NULL, 0, NULL);
-            mciSendStringA("open sounds\\car-engine.wav type mpegvideo alias carengine", NULL, 0, NULL);
-            mciSendStringA("play carengine repeat", NULL, 0, NULL);
-        } else {
-            mciSendStringA("stop carengine", NULL, 0, NULL);
-            mciSendStringA("close carengine", NULL, 0, NULL);
-        }
+        mciSendStringA("close carengine", NULL, 0, NULL);
+        mciSendStringA("open sounds\\car-engine.wav type mpegvideo alias carengine", NULL, 0, NULL);
+        mciSendStringA("play carengine", NULL, 0, NULL);
     }
     
     void update() {

@@ -8,6 +8,7 @@ class Showroom {
 private:
     GLuint floorTex, wallTex, glassTex, ceilingTex, roadTex, signTex, skyTex, skyCeilingTex;
     GLuint carDisplayList, crystalDisplayList;
+    GLuint paintingTex[4];
     
     float buildingWidth = 80.0f;
     float buildingDepth = 100.0f;
