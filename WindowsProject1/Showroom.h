@@ -93,4 +93,5 @@ public:
     void updateDriverCar(float angle) { driverCarAngle = angle; }
     void toggleCarWheels();
     void enterCar();
+    void toggleEngine();
 };

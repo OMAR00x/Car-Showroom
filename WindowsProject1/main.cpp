@@ -87,7 +87,15 @@ void display() {
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    camera.applyView();
+    
+    // Check if in driver seat mode
+    if(showroom.getDriverSeatMode()) {
+        float carX, carY, carZ, carAngle;
+        showroom.getDriverCarPos(carX, carY, carZ, carAngle);
+        camera.applyView(carX, carY, carZ, carAngle);
+    } else {
+        camera.applyView();
+    }
     
     showroom.updateCurrentFloor(camera.y);
     showroom.updateCameraPos(camera.x, camera.z);
@@ -140,6 +148,9 @@ void keyboard(unsigned char key, int x, int y) {
     }
     if (key == 'r' || key == 'R') {
         showroom.enterCar();
+    }
+    if (key == 'x' || key == 'X') {
+        showroom.toggleEngine();
     }
 }
 

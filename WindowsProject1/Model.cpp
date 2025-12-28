@@ -88,7 +88,6 @@ bool Model::load(const std::string& filename) {
 void Model::draw() {
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
-    glDisable(GL_COLOR_MATERIAL);
     for (GLuint dlist : pimpl->displayLists) {
         glCallList(dlist);
     }

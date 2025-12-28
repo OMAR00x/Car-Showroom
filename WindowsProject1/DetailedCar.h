@@ -215,6 +215,18 @@ public:
         wheelsSpinning = !wheelsSpinning;
     }
     
+    void toggleEngine() {
+        engineOn = !engineOn;
+        if(engineOn) {
+            mciSendStringA("close engine", NULL, 0, NULL);
+            mciSendStringA("open \"sounds\\car-engine.wav\" type waveaudio alias engine", NULL, 0, NULL);
+            mciSendStringA("play engine repeat", NULL, 0, NULL);
+        } else {
+            mciSendStringA("stop engine", NULL, 0, NULL);
+            mciSendStringA("close engine", NULL, 0, NULL);
+        }
+    }
+    
     void update() {
         if(doorOpen && doorAngle < 70) {
             doorAngle += 2.0f;

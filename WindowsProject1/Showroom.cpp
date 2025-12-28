@@ -784,9 +784,9 @@ void Showroom::drawShowroomPlatforms(int level) {
     } else if(level == 1) {
         drawFamilyHall(level);
     } else if(level == 2) {
-        drawLuxuryHall(level);
-    } else if(level == 3) {
         drawClassicHall(level);
+    } else if(level == 3) {
+        drawLuxuryHall(level);
     }
     glEnable(GL_TEXTURE_2D);
 }
@@ -999,11 +999,13 @@ void Showroom::drawCar(float x, float y, float z, float angle, int type) {
     // Use models for some cars, keep simple cars for others
     if(type == 0 && shelbyModel) {
         // Sports car - use Shelby model
-        glScalef(0.8f, 0.8f, 0.8f);
+        glTranslatef(0, -1.0f, 0);
+        glScalef(1.5f, 0.5f, 0.5f);
         shelbyModel->draw();
     } else if(type == 1 && mercModel) {
         // Family car - use Mercedes model
-        glScalef(0.8f, 0.8f, 0.8f);
+        glTranslatef(0, -1.0f, 0);
+        glScalef(1.5f, 0.5f, 0.5f);
         mercModel->draw();
     } else {
         // Fallback to simple car
@@ -1427,7 +1429,7 @@ void Showroom::drawHUD() {
     glLineWidth(1);
     
     // Floor indicator
-    const char* floorNames[] = {"Floor 1: Sports Cars", "Floor 2: Family Cars", "Floor 3: Luxury Cars", "Floor 4: Classic Cars"};
+    const char* floorNames[] = {"Floor 1: Sports Cars", "Floor 2: Family Cars", "Floor 3: Classic Cars", "Floor 4: Luxury Cars"};
     glColor3f(1, 1, 1);
     glRasterPos2f(30, 675);
     const char* text = floorNames[currentFloor];
@@ -1438,8 +1440,8 @@ void Showroom::drawHUD() {
     // Controls info
     glColor4f(0.1f, 0.1f, 0.15f, 0.7f);
     glBegin(GL_QUADS);
-    glVertex2f(20, 360);
-    glVertex2f(280, 360);
+    glVertex2f(20, 340);
+    glVertex2f(280, 340);
     glVertex2f(280, 630);
     glVertex2f(20, 630);
     glEnd();
@@ -1447,8 +1449,8 @@ void Showroom::drawHUD() {
     glColor4f(0.3f, 0.5f, 0.8f, 0.9f);
     glLineWidth(2);
     glBegin(GL_LINE_LOOP);
-    glVertex2f(20, 360);
-    glVertex2f(280, 360);
+    glVertex2f(20, 340);
+    glVertex2f(280, 340);
     glVertex2f(280, 630);
     glVertex2f(20, 630);
     glEnd();
@@ -1471,11 +1473,12 @@ void Showroom::drawHUD() {
         "1-4 - Elevator",
         "C - Car Door",
         "R - Enter Car",
+        "X - Engine",
         "V - Wheels",
         "F - Fullscreen"
     };
     
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 11; i++) {
         glRasterPos2f(30, 585 - i * 24);
         for(int j = 0; controls[i][j] != '\0'; j++) {
             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, controls[i][j]);
@@ -1485,6 +1488,41 @@ void Showroom::drawHUD() {
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
+    
+    // Show "Press R to enter car" message when near a car
+    if(!inDriverSeat) {
+        if(mainCar && mainCar->isNear(cameraX, cameraZ)) {
+            glDisable(GL_DEPTH_TEST);
+            glDisable(GL_LIGHTING);
+            glEnable(GL_BLEND);
+            
+            glColor4f(0.2f, 0.8f, 0.2f, 0.8f);
+            glRasterPos2f(500, 360);
+            const char* msg = "Press R to enter car";
+            for(int i = 0; msg[i] != '\0'; i++) {
+                glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, msg[i]);
+            }
+            
+            glDisable(GL_BLEND);
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_LIGHTING);
+        }
+    } else {
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_LIGHTING);
+        glEnable(GL_BLEND);
+        
+        glColor4f(0.8f, 0.2f, 0.2f, 0.8f);
+        glRasterPos2f(480, 360);
+        const char* msg = "R-Exit | X-Engine";
+        for(int i = 0; msg[i] != '\0'; i++) {
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, msg[i]);
+        }
+        
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_LIGHTING);
+    }
     
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
@@ -1546,15 +1584,24 @@ void Showroom::toggleCarWheels() {
 }
 
 void Showroom::enterCar() {
-    float carX, carY, carZ, carAngle;
-    if(isNearCar(cameraX, cameraZ, carX, carY, carZ, carAngle)) {
+    // Only allow entering the main detailed car
+    if(mainCar && mainCar->isNear(cameraX, cameraZ)) {
         inDriverSeat = !inDriverSeat;
+        
+        // Play door sound
+        mciSendStringA("close entercar", NULL, 0, NULL);
+        mciSendStringA("open \"sounds\\open-car-door.wav\" type waveaudio alias entercar", NULL, 0, NULL);
+        mciSendStringA("play entercar", NULL, 0, NULL);
+        
         if(inDriverSeat) {
-            // Enter driver seat
-            driverCarX = carX;
-            driverCarY = carY;
-            driverCarZ = carZ;
-            driverCarAngle = carAngle;
+            // Get car position
+            mainCar->getPosition(driverCarX, driverCarY, driverCarZ, driverCarAngle);
         }
+    }
+}
+
+void Showroom::toggleEngine() {
+    if(mainCar && inDriverSeat) {
+        mainCar->toggleEngine();
     }
 }
