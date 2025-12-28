@@ -1018,11 +1018,24 @@ void Showroom::drawCar(float x, float y, float z, float angle, int type) {
     
     // Use models for some cars, keep simple cars for others
     if(type == 0 && shelbyModel) {
-        glTranslatef(0, -1.5f, 0);
+        glTranslatef(0, -0.3f, 0);
+        glScalef(0.8f, 0.8f, 0.8f);
+        glDisable(GL_COLOR_MATERIAL);
+        glColor3f(0.9f, 0.1f, 0.1f);
+        GLfloat red_amb[] = {0.3f, 0.03f, 0.03f, 1.0f};
+        GLfloat red_diff[] = {0.9f, 0.1f, 0.1f, 1.0f};
+        GLfloat red_spec[] = {0.5f, 0.5f, 0.5f, 1.0f};
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, red_amb);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, red_diff);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, red_spec);
         shelbyModel->draw();
+        glEnable(GL_COLOR_MATERIAL);
     } else if(type == 1 && mercModel) {
-        glTranslatef(0, -0.2f, 0);
+        glTranslatef(0, -1.2f, 0);
+        glScalef(0.25f, 0.25f, 0.25f);
+        glDisable(GL_COLOR_MATERIAL);
         mercModel->draw();
+        glEnable(GL_COLOR_MATERIAL);
     } else {
         // Fallback to simple car
         glScalef(1.5f, 1.5f, 1.5f);
@@ -1577,14 +1590,15 @@ void Showroom::toggleCarWheels() {
 
 void Showroom::enterCar() {
     if(currentFloor == 0 && mainCar && mainCar->isNear(cameraX, cameraZ)) {
-        inDriverSeat = !inDriverSeat;
+        if(inDriverSeat) {
+            inDriverSeat = false;
+        } else {
+            inDriverSeat = true;
+            mainCar->getPosition(driverCarX, driverCarY, driverCarZ, driverCarAngle);
+        }
         mciSendStringA("close entercar", NULL, 0, NULL);
         mciSendStringA("open sounds\\open-car-door.wav type mpegvideo alias entercar", NULL, 0, NULL);
         mciSendStringA("play entercar", NULL, 0, NULL);
-        
-        if(inDriverSeat) {
-            mainCar->getPosition(driverCarX, driverCarY, driverCarZ, driverCarAngle);
-        }
     }
 }
 

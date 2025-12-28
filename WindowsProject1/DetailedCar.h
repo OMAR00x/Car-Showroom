@@ -194,7 +194,7 @@ public:
         glPushMatrix();
         glTranslatef(x, y, z);
         glRotatef(angle, 0, 1, 0);
-        glScalef(2.0f, 1.5f, 2.0f);
+        glScalef(1.5f, 1.5f, 1.5f);
         
         drawBody();
         drawWheels();
