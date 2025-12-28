@@ -88,11 +88,17 @@ void display() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    // Check if in driver seat mode
     if(showroom.getDriverSeatMode()) {
         float carX, carY, carZ, carAngle;
         showroom.getDriverCarPos(carX, carY, carZ, carAngle);
-        camera.applyView(carX, carY, carZ, carAngle);
+        float rad = carAngle * 3.14159f / 180.0f;
+        float eyeX = carX + sin(rad) * 0.5f;
+        float eyeY = carY + 0.5f;
+        float eyeZ = carZ + cos(rad) * 0.5f;
+        float lookX = carX + sin(rad) * 10;
+        float lookY = carY + 0.5f;
+        float lookZ = carZ + cos(rad) * 10;
+        gluLookAt(eyeX, eyeY, eyeZ, lookX, lookY, lookZ, 0, 1, 0);
     } else {
         camera.applyView();
     }

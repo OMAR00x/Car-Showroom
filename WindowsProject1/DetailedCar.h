@@ -218,12 +218,12 @@ public:
     void toggleEngine() {
         engineOn = !engineOn;
         if(engineOn) {
-            mciSendStringA("close engine", NULL, 0, NULL);
-            mciSendStringA("open \"sounds\\car-engine.wav\" type waveaudio alias engine", NULL, 0, NULL);
-            mciSendStringA("play engine repeat", NULL, 0, NULL);
+            mciSendStringA("close carengine", NULL, 0, NULL);
+            mciSendStringA("open sounds\\car-engine.wav type mpegvideo alias carengine", NULL, 0, NULL);
+            mciSendStringA("play carengine repeat", NULL, 0, NULL);
         } else {
-            mciSendStringA("stop engine", NULL, 0, NULL);
-            mciSendStringA("close engine", NULL, 0, NULL);
+            mciSendStringA("stop carengine", NULL, 0, NULL);
+            mciSendStringA("close carengine", NULL, 0, NULL);
         }
     }
     

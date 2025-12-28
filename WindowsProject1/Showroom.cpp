@@ -998,14 +998,10 @@ void Showroom::drawCar(float x, float y, float z, float angle, int type) {
     
     // Use models for some cars, keep simple cars for others
     if(type == 0 && shelbyModel) {
-        // Sports car - use Shelby model
-        glTranslatef(0, -1.0f, 0);
-        glScalef(1.5f, 0.5f, 0.5f);
+        glTranslatef(0, -0.5f, 0);
         shelbyModel->draw();
     } else if(type == 1 && mercModel) {
-        // Family car - use Mercedes model
-        glTranslatef(0, -1.0f, 0);
-        glScalef(1.5f, 0.5f, 0.5f);
+        glTranslatef(0, -0.5f, 0);
         mercModel->draw();
     } else {
         // Fallback to simple car
@@ -1584,17 +1580,13 @@ void Showroom::toggleCarWheels() {
 }
 
 void Showroom::enterCar() {
-    // Only allow entering the main detailed car
     if(mainCar && mainCar->isNear(cameraX, cameraZ)) {
         inDriverSeat = !inDriverSeat;
-        
-        // Play door sound
         mciSendStringA("close entercar", NULL, 0, NULL);
-        mciSendStringA("open \"sounds\\open-car-door.wav\" type waveaudio alias entercar", NULL, 0, NULL);
+        mciSendStringA("open sounds\\open-car-door.wav type mpegvideo alias entercar", NULL, 0, NULL);
         mciSendStringA("play entercar", NULL, 0, NULL);
         
         if(inDriverSeat) {
-            // Get car position
             mainCar->getPosition(driverCarX, driverCarY, driverCarZ, driverCarAngle);
         }
     }

@@ -48,23 +48,14 @@ bool Model::load(const std::string& filename) {
         glNewList(dlist, GL_COMPILE);
 
         const auto& mat = pimpl->materials[i];
-        GLfloat ambient[] = { mat.ambient[0] * 0.3f, mat.ambient[1] * 0.3f, mat.ambient[2] * 0.3f, 1.0f };
+        GLfloat ambient[] = { mat.ambient[0], mat.ambient[1], mat.ambient[2], 1.0f };
         GLfloat diffuse[] = { mat.diffuse[0], mat.diffuse[1], mat.diffuse[2], 1.0f };
         GLfloat specular[] = { mat.specular[0], mat.specular[1], mat.specular[2], 1.0f };
-        
-        if (i == 1) {
-            diffuse[0] = 0.8f; diffuse[1] = 0.1f; diffuse[2] = 0.1f;
-        }
-        else if (i == 2) {
-            specular[0] = 0.9f; specular[1] = 0.9f; specular[2] = 0.9f;
-        }
 
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mat.shininess);
-        
-        std::cout << "Material " << i << ": diffuse=" << diffuse[0] << "," << diffuse[1] << "," << diffuse[2] << std::endl;
 
         glBegin(GL_TRIANGLES);
         for (const auto& shape : shapes) {
@@ -86,9 +77,11 @@ bool Model::load(const std::string& filename) {
 }
 // دالة الرسم
 void Model::draw() {
+    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
     for (GLuint dlist : pimpl->displayLists) {
         glCallList(dlist);
     }
+    glPopAttrib();
 }
