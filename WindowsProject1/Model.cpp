@@ -40,7 +40,7 @@ bool Model::load(const std::string& filename) {
     if (!ret) return false;
 
     if (pimpl->materials.empty()) {
-        pimpl->materials.resize(1); // مادة افتراضية إذا لم يوجد ملف mtl
+        pimpl->materials.resize(1);  
     }
 
     for (size_t i = 0; i < pimpl->materials.size(); i++) {
@@ -51,17 +51,6 @@ bool Model::load(const std::string& filename) {
         GLfloat ambient[] = { mat.ambient[0], mat.ambient[1], mat.ambient[2], 1.0f };
         GLfloat diffuse[] = { mat.diffuse[0], mat.diffuse[1], mat.diffuse[2], 1.0f };
         GLfloat specular[] = { mat.specular[0], mat.specular[1], mat.specular[2], 1.0f };
-        
-        if(diffuse[0] < 0.01f && diffuse[1] < 0.01f && diffuse[2] < 0.01f) {
-            diffuse[0] = 0.6f; diffuse[1] = 0.6f; diffuse[2] = 0.6f;
-        }
-        if(ambient[0] < 0.01f && ambient[1] < 0.01f && ambient[2] < 0.01f) {
-            ambient[0] = 0.4f; ambient[1] = 0.4f; ambient[2] = 0.4f;
-        }
-        
-        diffuse[0] = diffuse[0] > 0.01f ? diffuse[0] * 1.5f : diffuse[0];
-        diffuse[1] = diffuse[1] > 0.01f ? diffuse[1] * 1.5f : diffuse[1];
-        diffuse[2] = diffuse[2] > 0.01f ? diffuse[2] * 1.5f : diffuse[2];
 
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
@@ -71,7 +60,7 @@ bool Model::load(const std::string& filename) {
         glBegin(GL_TRIANGLES);
         for (const auto& shape : shapes) {
             for (size_t f_idx = 0; f_idx < shape.mesh.material_ids.size(); f_idx++) {
-                if (shape.mesh.material_ids[f_idx] == i) {
+                if (shape.mesh.material_ids[f_idx] == i || (pimpl->materials.size() == 1 && shape.mesh.material_ids[f_idx] < 0)) {
                     for (int v = 0; v < 3; v++) {
                         tinyobj::index_t idx = shape.mesh.indices[3 * f_idx + v];
                         if (idx.normal_index >= 0) glNormal3fv(&attrib.normals[3 * idx.normal_index]);
@@ -88,11 +77,23 @@ bool Model::load(const std::string& filename) {
 }
 // دالة الرسم
 void Model::draw() {
-    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_NORMALIZE);
     for (GLuint dlist : pimpl->displayLists) {
         glCallList(dlist);
     }
-    glPopAttrib();
+}
+
+// دالة الرسم بلون مخصص (للجسم فقط)
+void Model::drawWithColor(float r, float g, float b) {
+    for (size_t i = 0; i < pimpl->displayLists.size(); i++) {
+        if (i == 0) {
+            GLfloat red_amb[] = {r * 0.3f, g * 0.3f, b * 0.3f, 1.0f};
+            GLfloat red_diff[] = {r, g, b, 1.0f};
+            GLfloat red_spec[] = {0.5f, 0.5f, 0.5f, 1.0f};
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, red_amb);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, red_diff);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, red_spec);
+            glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 32.0f);
+        }
+        glCallList(pimpl->displayLists[i]);
+    }
 }

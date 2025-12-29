@@ -72,7 +72,7 @@ void init() {
     camera.showroom = &showroom;
     camera.x = 0;
     camera.y = 3.0f;
-    camera.z = -85;
+    camera.z = -100;
     camera.angleYaw = 90.0f;
     camera.updateVectors();
 }
@@ -91,12 +91,12 @@ void display() {
     if(showroom.getDriverSeatMode()) {
         float carX, carY, carZ, carAngle;
         showroom.getDriverCarPos(carX, carY, carZ, carAngle);
-        float rad = carAngle * 3.14159f / 180.0f;
-        float eyeX = carX + sin(rad) * 0.5f;
+        float rad = (carAngle - camera.angleYaw) * 3.14159f / 180.0f;
+        float eyeX = carX;
         float eyeY = carY + 1.5f;
-        float eyeZ = carZ + cos(rad) * 0.5f;
+        float eyeZ = carZ;
         float lookX = carX + sin(rad) * 10;
-        float lookY = carY + 1.5f;
+        float lookY = carY + 1.5f + tan(camera.anglePitch * 3.14159f / 180.0f) * 10;
         float lookZ = carZ + cos(rad) * 10;
         gluLookAt(eyeX, eyeY, eyeZ, lookX, lookY, lookZ, 0, 1, 0);
     } else {

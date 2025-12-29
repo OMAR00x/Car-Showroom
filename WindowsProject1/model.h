@@ -6,18 +6,19 @@
 class Model {
 private:
     // Pointer to private implementation (PIMPL Idiom)
-    // åĞÇ ÇáÃÓáæÈ íÎİí ßá ÊİÇÕíá ãßÊÈÉ ÇáÊÍãíá Úä åĞÇ Çáãáİ
+    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     struct ModelImpl;
     ModelImpl* pimpl;
 
 public:
     Model();
-    ~Model(); // ÏÇáÉ åÇÏãÉ áÊäÙíİ ÇáĞÇßÑÉ
+    ~Model(); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    // ÊÚØíá ÇáäÓÎ áãäÚ ãÔÇßá ÇáĞÇßÑÉ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     Model(const Model&) = delete;
     Model& operator=(const Model&) = delete;
 
     bool load(const std::string& filename);
     void draw();
+    void drawWithColor(float r, float g, float b);
 };
