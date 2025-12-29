@@ -30,16 +30,14 @@ int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    glutCreateWindow("A Legend Car Showroom Project ");
+    glutCreateWindow("Car Showroom 3D");
 
     if (glewInit() != GLEW_OK) {
-        std::cerr << "GLEW failed to initialize!" << std::endl;
+        std::cerr << "Failed to init GLEW" << std::endl;
         return -1;
     }
 
     init();
-
-    
 
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
@@ -55,6 +53,7 @@ int main(int argc, char** argv) {
 }
 
 void init() {
+    // setup OpenGL
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glShadeModel(GL_SMOOTH);
@@ -65,9 +64,11 @@ void init() {
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
+    // ambient light
     GLfloat ambientLight[] = { 0.3f, 0.3f, 0.3f, 1.0f };
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
 
+    // init showroom and camera
     showroom.init();
     camera.showroom = &showroom;
     camera.x = 0;

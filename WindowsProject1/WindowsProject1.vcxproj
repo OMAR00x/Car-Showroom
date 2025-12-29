@@ -138,33 +138,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BaseHall.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Car.h" />
-    <ClInclude Include="ClassicCarHall.h" />
-    <ClInclude Include="FamilyCarHall.h" />
+    <ClInclude Include="DetailedCar.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="LuxuryCarHall.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Showroom.h" />
-    <ClInclude Include="SportsCarHall.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WindowsProject1.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\glad.c" />
-    <ClCompile Include="Car.cpp" />
-    <ClCompile Include="ClassicCarHall.cpp" />
-    <ClCompile Include="FamilyCarHall.cpp" />
-    <ClCompile Include="LuxuryCarHall.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Model.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Showroom.cpp" />
-    <ClCompile Include="SportsCarHall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WindowsProject1.rc" />
